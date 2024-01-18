@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM 
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+		<property name="connection.url">jdbc:mysql://localhost:3306/healthlogger</property>
+		<property name="dialect">org.hibernate.dialect.MySQL5Dialect</property>
+		<property name="connection.user">root</property>
+		<property name="connection.password">Password@123</property>
+
+		<property name="show_sql">true</property>
+
+		<property name="hbm2ddl.auto">update</property>
+
+		<mapping class="com.entities.Admin" />
+		<mapping class="com.entities.Doctor" />
+		<mapping class="com.entities.Gender" />
+		<mapping class="com.entities.Patient" />
+		<mapping class="com.entities.Vitals" />
+	</session-factory>
+
+</hibernate-configuration>
