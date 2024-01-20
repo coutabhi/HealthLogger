@@ -40,8 +40,8 @@ public class AddPatientServlet extends HttpServlet {
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession httpSession = request.getSession();
-		Doctor loggedInDoctor = (Doctor) httpSession.getAttribute("loggedInDoctor");
-		if (loggedInDoctor != null) {
+		Doctor loggedDoctor = (Doctor) httpSession.getAttribute("loggedDoctor");
+		if (loggedDoctor != null) {
 			Configuration cfg = new Configuration();
 			cfg.configure("hibernate.cfg.xml");
 			try (SessionFactory sf = cfg.buildSessionFactory(); Session session = sf.openSession()) {
@@ -63,7 +63,7 @@ public class AddPatientServlet extends HttpServlet {
 				patient.setPatientRemarks(patientRemarks);
 				patient.setPatientGender(patientGender);
 
-				patient.setDoctor(loggedInDoctor);
+				patient.setDoctor(loggedDoctor);
 
 				session.persist(patient);
 				trans.commit();

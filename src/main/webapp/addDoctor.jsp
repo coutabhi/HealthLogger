@@ -1,3 +1,4 @@
+<%@page import="com.entities.Admin"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -8,7 +9,7 @@
 <style>
 body {
 	font-family: 'Roboto', sans-serif;
-	background-color: #f5f5f5;
+	background-color: #f0f2f1;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -70,6 +71,16 @@ button:hover {
 </style>
 </head>
 <body>
+	<%
+	HttpSession httpSession2 = request.getSession();
+	Admin loggedInAdmin = (Admin) httpSession2.getAttribute("loggedInAdmin");
+	if (loggedInAdmin != null) {
+		out.print("<h1>Health Logger</h1>");
+
+	} else {
+		response.sendRedirect("adminLogin.jsp");
+	}
+	%>
 	<div class="container">
 		<h1>Health Logger</h1>
 		<h6>Add Doctor</h6>

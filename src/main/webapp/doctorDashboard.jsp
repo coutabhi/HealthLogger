@@ -32,6 +32,7 @@
 	margin: 10px;
 	border-color: white;
 }
+
 h1 {
 	text-align: center;
 	color: blue;
@@ -70,8 +71,6 @@ th {
 	margin-top: 10px;
 	display: block;
 }
-
-
 </style>
 </head>
 <body>
@@ -80,9 +79,9 @@ th {
 		<h2>
 			<%
 			HttpSession httpSession = request.getSession();
-			Doctor loggedInDoctor = (Doctor) httpSession.getAttribute("loggedInDoctor");
-			if (loggedInDoctor != null) {
-				out.print("Hi, " + loggedInDoctor.getDoctorName() + "!");
+			Doctor loggedDoctor = (Doctor) httpSession.getAttribute("loggedDoctor");
+			if (loggedDoctor != null) {
+				out.print("Hi, " + loggedDoctor.getDoctorName() + "!");
 			} else {
 				response.sendRedirect("doctorLogin.jsp");
 			}
@@ -90,14 +89,15 @@ th {
 		</h2>
 		<div>
 			<button class="buttons">Manage your Profile</button>
-			<button class="buttons">Logout</button>
+			<button class="buttons" onclick="logout()">Logout</button>
 		</div>
 	</div>
 
 	<div class="tabs">
 		<div>
 			<button class="buttons"
-				onclick="window.location.href='searchPatient.jsp'">Search Patient</button>
+				onclick="window.location.href='searchPatient.jsp'">Search
+				Patient</button>
 		</div>
 		<div>
 			<button class="buttons"
@@ -105,6 +105,8 @@ th {
 			<button class="buttons"
 				onclick="window.location.href='managePatients.jsp'">Manage
 				Patients</button>
+			<button onclick="window.location.href='vitalAlerts.jsp'"
+				class="buttons">Vital Alerts</button>
 			<button class="buttons"
 				onclick="window.location.href='manageVitals.jsp'">Manage
 				Vitals</button>
@@ -114,7 +116,7 @@ th {
 	<div class="patients-list">
 		<h2>All Patients</h2>
 		<%
-		List<Patient> patients = PatientService.getAllPatientsByDoctorId(loggedInDoctor.getDoctorId());
+		List<Patient> patients = PatientService.getAllPatientsByDoctorId(loggedDoctor.getDoctorId());
 		%>
 		<table>
 			<thead>
@@ -149,5 +151,12 @@ th {
 			</tbody>
 		</table>
 	</div>
+	<script>
+		function logout() {
+	<%new com.services.AdminService().adminLogout(session);%>
+		window.location.href = "index.jsp";
+			alert("Logout successful");
+		}
+	</script>
 </body>
 </html>

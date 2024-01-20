@@ -1,6 +1,9 @@
 package com.services;
 
 import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -25,5 +28,9 @@ public class DoctorService {
 			e.printStackTrace();
 		}
 		return patients;
+	}
+	
+	public void adminLogout(HttpSession httpSession) {
+		httpSession.invalidate();
 	}
 }

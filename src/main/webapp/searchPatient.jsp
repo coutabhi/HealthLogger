@@ -65,6 +65,23 @@ input {
 #searchResults li:hover {
 	background-color: #ddd;
 }
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 20px 0;
+}
+
+th, td {
+	border: 1px solid #bdc3c7;
+	padding: 10px;
+	text-align: left;
+}
+
+th {
+	background-color: black;
+	color: #fff;
+}
 </style>
 </head>
 <body>
@@ -72,9 +89,9 @@ input {
 		<h1>
 			<%
 			HttpSession httpSession = request.getSession();
-			Doctor loggedInDoctor = (Doctor) httpSession.getAttribute("loggedInDoctor");
-			if (loggedInDoctor != null) {
-				out.print("Hi, " + loggedInDoctor.getDoctorName() + "!");
+			Doctor loggedDoctor = (Doctor) httpSession.getAttribute("loggedDoctor");
+			if (loggedDoctor != null) {
+				out.print("Hi, " + loggedDoctor.getDoctorName() + "!");
 			} else {
 				response.sendRedirect("doctorLogin.jsp");
 			}
@@ -84,26 +101,26 @@ input {
 	<div>
 		<button class="buttons"
 			onclick="window.location.href='doctorDashboard.jsp'">Home</button>
-		<div class="search-form">
-			<input type="text" id="searchQuery" placeholder="Search Patients" />
+		<form action="searchPatient.jsp" class="search-form" method="post">
+			<input type="text" name="search" placeholder="Search Patients" />
 			<ul id="searchResults"></ul>
-		</div>
+		</form>
 	</div>
+	<%
+		String searchText = request.getParameter("search");
+	%>
 	<div class="patients-list">
 		<h2>All Patients</h2>
 		<%
-		String searchQuery = request.getParameter("searchQuery");
-		List<Patient> patients;
-
-		if (searchQuery != null && !searchQuery.isEmpty()) {
-			// Fetch the list of patients based on search criteria
-			patients = PatientService.searchPatientsByName(loggedInDoctor.getDoctorId(), searchQuery);
-		} else {
-			// Fetch all patients
-			patients = PatientService.getAllPatientsByDoctorId(loggedInDoctor.getDoctorId());
-		}
+			String searchQuery = searchText;
+			List<Patient> patients;
+	
+			if (searchQuery != null && !searchQuery.isEmpty()) {
+				patients = PatientService.searchPatientsByName(loggedDoctor.getDoctorId(), searchQuery);
+			} else {
+				patients = PatientService.getAllPatientsByDoctorId(loggedDoctor.getDoctorId());
+			}
 		%>
-		<!-- Displaying the list of patients -->
 		<table>
 			<thead>
 				<tr>
@@ -129,6 +146,9 @@ input {
 					<td><%=patient.getPatientGender()%></td>
 					<td><a
 						href="viewVitals.jsp?patientId=<%=patient.getPatientId()%>">View
+							Vitals</a> <h1> </h1>
+							<a
+						href="addVitals.jsp?patientId=<%=patient.getPatientId()%>">Add
 							Vitals</a></td>
 				</tr>
 				<%
@@ -139,56 +159,58 @@ input {
 	</div>
 
 	<script>
-    document.getElementById('searchQuery').addEventListener('input', function () {
-        var searchQuery = this.value.trim();
-        var searchResultsContainer = document.getElementById('searchResults');
+	document.getElementById('searchQuery').addEventListener('input', function () {
+	    var searchQuery = this.value.trim();
+	    var searchResultsContainer = document.getElementById('searchResults');
 
-        searchResultsContainer.innerHTML = '';
+	    searchResultsContainer.innerHTML = '';
 
-        if (searchQuery !== '') {
-            // Fetch filtered patients
-            var doctorId = <%=loggedInDoctor.getDoctorId()%>;
-            fetch(`SearchPatientsServlet?doctorId=${doctorId}&searchQuery=${searchQuery}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    data.forEach(patient => {
-                        var listItem = document.createElement('li');
-                        listItem.textContent = patient.patientName;
-                        listItem.addEventListener('click', function () {
-                            window.location.href = 'viewVitals.jsp?patientId=' + patient.patientId;
-                        });
-                        searchResultsContainer.appendChild(listItem);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-        } else {
-            // Fetch all patients
-            var doctorId = <%=loggedInDoctor.getDoctorId()%>;
-            fetch(`SearchPatientsServlet?doctorId=${doctorId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    data.forEach(patient => {
-                        var listItem = document.createElement('li');
-                        listItem.textContent = patient.patientName;
-                        listItem.addEventListener('click', function () {
-                            window.location.href = 'viewVitals.jsp?patientId=' + patient.patientId;
-                        });
-                        searchResultsContainer.appendChild(listItem);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    });
+	    if (searchQuery !== '') {
+	        var doctorId = <%=loggedDoctor.getDoctorId()%>;
+	        console.log('Search query:', searchQuery);
+
+	        fetch(`SearchPatientsServlet?doctorId=${doctorId}&searchQuery=${searchQuery}`)
+	            .then(response => {
+	                if (!response.ok) {
+	                    throw new Error('Network response was not ok');
+	                }
+	                return response.json();
+	            })
+	            .then(data => {
+	                data.forEach(patient => {
+	                    var listItem = document.createElement('li');
+	                    listItem.textContent = patient.patientName;
+	                    listItem.addEventListener('click', function () {
+	                        window.location.href = 'viewVitals.jsp?patientId=' + patient.patientId;
+	                    });
+	                    searchResultsContainer.appendChild(listItem);
+	                });
+	            })
+	            .catch(error => console.error('Error:', error));
+	    } else {
+	        var doctorId = <%=loggedDoctor.getDoctorId()%>;
+
+	        fetch(`SearchPatientsServlet?doctorId=${doctorId}`)
+	            .then(response => {
+	                if (!response.ok) {
+	                    throw new Error('Network response was not ok');
+	                }
+	                return response.json();
+	            })
+	            .then(data => {
+	                data.forEach(patient => {
+	                    var listItem = document.createElement('li');
+	                    listItem.textContent = patient.patientName;
+	                    listItem.addEventListener('click', function () {
+	                        window.location.href = 'viewVitals.jsp?patientId=' + patient.patientId;
+	                    });
+	                    searchResultsContainer.appendChild(listItem);
+	                });
+	            })
+	            .catch(error => console.error('Error:', error));
+	    }
+	});
+
 </script>
 
 </body>

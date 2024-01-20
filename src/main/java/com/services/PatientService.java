@@ -1,5 +1,6 @@
 package com.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -8,6 +9,7 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import com.entities.Patient;
+import com.entities.Vitals;
 
 public class PatientService {
 
@@ -28,21 +30,22 @@ public class PatientService {
 		return patients;
 	}
 
-	public int deletePatient(Long patientId) {
-		int result = 0;
-		try {
-			Configuration cfg = new Configuration();
-			cfg.configure("hibernate.cfg.xml");
-			SessionFactory sf = cfg.buildSessionFactory();
-			Session session = sf.openSession();
+	public boolean deletePatient(Patient patient) {
+		Configuration cfg = new Configuration();
+		cfg.configure("hibernate.cfg.xml");
+		boolean deleted = false;
+		try (SessionFactory sf = cfg.buildSessionFactory(); Session session = sf.openSession()) {
 			Transaction trans = session.beginTransaction();
-			result = session.createQuery("DELETE FROM Patient WHERE patientId = :patientId")
-					.setParameter("patientId", patientId).executeUpdate();
+
+			session.delete(patient);
+
 			trans.commit();
+			deleted = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return result;
+
+		return deleted;
 	}
 
 	public Patient getPatientDetails(Long patientId) {
@@ -81,23 +84,46 @@ public class PatientService {
 
 		return patient;
 	}
-	
-	 public static List<Patient> searchPatientsByName(Long DoctorId, String patientName) {
-		 List<Patient> patients = null;
-		 try {
-				Configuration cfg = new Configuration();
-				cfg.configure("hibernate.cfg.xml");
-				SessionFactory sf = cfg.buildSessionFactory();
-				Session session = sf.openSession();
-				Transaction trans = session.beginTransaction();
-				patients = session.createQuery("FROM Patient WHERE patientName = :patientName and DoctorId = :DoctorId", Patient.class)
-						.setParameter("patientName", patientName)
-						.setParameter("DoctorId", DoctorId).list();
-				trans.commit();
-			} catch (Exception e) {
-				e.printStackTrace();
+
+	public static List<Patient> searchPatientsByName(Long doctorId, String patientName) {
+		List<Patient> patients = null;
+		try {
+			Configuration cfg = new Configuration();
+			cfg.configure("hibernate.cfg.xml");
+			SessionFactory sf = cfg.buildSessionFactory();
+			Session session = sf.openSession();
+			Transaction trans = session.beginTransaction();
+			patients = session
+					.createQuery("FROM Patient WHERE patientName Like :patientName and doctorId = :doctorId",
+							Patient.class)
+					.setParameter("patientName", "%" + patientName + "%").setParameter("doctorId", doctorId).list();
+			trans.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return patients;
+	}
+
+	public List<Vitals> getVitalsWithCriticalValues(Long doctorId) {
+		List<Vitals> vitalsWithCriticalValues = new ArrayList<>();
+
+		List<Patient> allPatients = getAllPatientsByDoctorId(doctorId);
+
+		for (Patient patient : allPatients) {
+			List<Vitals> vitalsList = patient.getVitals();
+
+			for (Vitals vitals : vitalsList) {
+				if (hasCriticalVitals(vitals)) {
+					vitalsWithCriticalValues.add(vitals);
+				}
 			}
-		 return patients;
-	    }
+		}
+
+		return vitalsWithCriticalValues;
+	}
+
+	private boolean hasCriticalVitals(Vitals vitals) {
+		return vitals.getBp_high() > 160 || vitals.getSpo2() < 90;
+	}
 
 }

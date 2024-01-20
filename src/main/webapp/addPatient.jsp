@@ -15,7 +15,7 @@
 	box-sizing: border-box;
 }
 
-body {
+.container {
 	height: 100vh;
 	display: flex;
 	flex-direction: column;
@@ -23,13 +23,10 @@ body {
 	justify-content: center;
 }
 
-h1 {
-	margin-top: 300px;
-}
-
 p {
 	color: #a0a0a0;
 	margin: 4px 0 24px 0;
+	margin-bottom: 80px;
 }
 
 form {
@@ -56,7 +53,15 @@ input[type="radio"] {
 	width: max-content;
 }
 
-button {
+.buttons {
+	border-radius: 10px;
+	height: 5vh;
+	text-align: center;
+	margin: 10px;
+	border-color: white;
+}
+
+.cbutton {
 	width: 350px;
 	border-radius: 12px;
 	background: #32C732;
@@ -67,73 +72,77 @@ button {
 	cursor: pointer;
 }
 
-button:hover {
+.cbutton:hover {
 	background: #28A228;
 }
 </style>
 </head>
 <body>
 	<%
-	// Retrieve the doctor object from the session
 	HttpSession httpSession = request.getSession();
-	Doctor loggedInDoctor = (Doctor) httpSession.getAttribute("loggedInDoctor");
-	if (loggedInDoctor != null) {
-		out.print("<h1>Health Logger</h1>");
-		
+	Doctor loggedDoctor = (Doctor) httpSession.getAttribute("loggedDoctor");
+	if (loggedDoctor != null) {
+		out.print("<h1 align='center'>Health Logger</h1>");
+
 	} else {
 		response.sendRedirect("doctorLogin.jsp");
 	}
 	%>
-	<p>Add Patient Information</p>
+	<p align="center">Add Patient Information</p>
 
-	<form action="AddPatientServlet" method="post">
-		<div class="form-group">
-			<label> Name</label> <input type="text" name="patientName"
-				placeholder="John Peterson" required>
-		</div>
-		<div class="form-group">
-			<label>Email</label> <input type="email" name="patientEmail"
-				placeholder="abc@example.com">
-		</div>
-		<div class="form-group">
-			<label>Phone</label> <input type="text" name="patientPhone"
-				placeholder="+91 ***** *****" required>
-		</div>
-		<div class="form-group">
-			<label>Age</label> <input type="number" name="patientAge" id="age"
-				placeholder="eg: 22">
-		</div>
-		<div class="form-group">
-			<label>Diagnosis</label> <input type="text" name="patientDiagnosis"
-				placeholder="eg: Blood Pressure">
-		</div>
-		<div class="form-group">
-			<label>Remark</label>
-			<textarea rows="5" name="patientRemarks" id="remarks"></textarea>
-		</div>
 
-		<div class="form-group">
-			<span>Gender</span>
-			<div style="display: flex; gap: 12px;">
-				<input type="radio" name="patientGender" id="male"
-					value="<%=Gender.MALE%>"> <label for="male">Male</label>
+	<div class="container">
+
+		<button class="buttons"
+		onclick="window.location.href='doctorDashboard.jsp'">Home</button>
+		<form action="AddPatientServlet" method="post">
+			<div class="form-group">
+				<label> Name</label> <input type="text" name="patientName"
+					placeholder="John Peterson" required>
 			</div>
-			<div style="display: flex; gap: 12px;">
-				<input type="radio" name="patientGender" id="female"
-					value="<%=Gender.FEMALE%>"> <label for="female">Female</label>
+			<div class="form-group">
+				<label>Email</label> <input type="email" name="patientEmail"
+					placeholder="abc@example.com">
 			</div>
-			<div style="display: flex; gap: 12px;">
-				<input type="radio" name="patientGender" id="female"
-					value="<%=Gender.OTHER%>"> <label for="female">Other</label>
+			<div class="form-group">
+				<label>Phone</label> <input type="text" name="patientPhone"
+					placeholder="+91 ***** *****" required>
 			</div>
-		</div>
+			<div class="form-group">
+				<label>Age</label> <input type="number" name="patientAge" id="age"
+					placeholder="eg: 22">
+			</div>
+			<div class="form-group">
+				<label>Diagnosis</label> <input type="text" name="patientDiagnosis"
+					placeholder="eg: Blood Pressure">
+			</div>
+			<div class="form-group">
+				<label>Remark</label>
+				<textarea rows="5" name="patientRemarks" id="remarks"></textarea>
+			</div>
 
-		<div role="alert">
-			<small>${message}</small>
-		</div>
-		<button type="submit">Sumbit</button>
+			<div class="form-group">
+				<span>Gender</span>
+				<div style="display: flex; gap: 12px;">
+					<input type="radio" name="patientGender" id="male"
+						value="<%=Gender.MALE%>"> <label for="male">Male</label>
+				</div>
+				<div style="display: flex; gap: 12px;">
+					<input type="radio" name="patientGender" id="female"
+						value="<%=Gender.FEMALE%>"> <label for="female">Female</label>
+				</div>
+				<div style="display: flex; gap: 12px;">
+					<input type="radio" name="patientGender" id="female"
+						value="<%=Gender.OTHER%>"> <label for="female">Other</label>
+				</div>
+			</div>
 
-	</form>
+			<div role="alert">
+				<small>${message}</small>
+			</div>
+			<button class="cbutton" type="submit">Sumbit</button>
 
+		</form>
+	</div>
 </body>
 </html>

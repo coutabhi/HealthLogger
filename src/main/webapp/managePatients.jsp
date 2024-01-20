@@ -39,9 +39,9 @@ h3 {
 <body>
 	<%
 	HttpSession httpSession = request.getSession();
-	Doctor loggedInDoctor = (Doctor) httpSession.getAttribute("loggedInDoctor");
-	if (loggedInDoctor != null) {
-		out.print("Hi, " + loggedInDoctor.getDoctorName() + "!");
+	Doctor loggedDoctor = (Doctor) httpSession.getAttribute("loggedDoctor");
+	if (loggedDoctor != null) {
+		out.print("<h1 align='center'>Health Logger</h1>");
 	} else {
 		response.sendRedirect("doctorLogin.jsp");
 	}
@@ -63,7 +63,7 @@ h3 {
 		<h2>All Patients</h2>
 		<%
 		// Fetch the list of patients from your backend service
-		List<Patient> patients = PatientService.getAllPatientsByDoctorId(loggedInDoctor.getDoctorId());
+		List<Patient> patients = PatientService.getAllPatientsByDoctorId(loggedDoctor.getDoctorId());
 		%>
 		<!-- Displaying the list of patients -->
 		<table>
@@ -93,6 +93,9 @@ h3 {
 						href="addVitals.jsp?patientId=<%=patient.getPatientId()%>">Add
 							Vitals</a> <a href="javascript:void(0);"
 						onclick="deletePatient(<%=patient.getPatientId()%>)">Delete
+							Patient</a>
+							<a href="javascript:void(0);"
+						onclick="updatePatient(<%=patient.getPatientId()%>)">Update
 							Patient</a></td>
 				</tr>
 				<%

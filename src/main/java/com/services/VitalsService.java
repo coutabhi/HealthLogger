@@ -1,5 +1,7 @@
 package com.services;
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -45,5 +47,22 @@ public class VitalsService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public List<Vitals> getVitalsByPatientId(Long patientId) {
+		List<Vitals> vitals = null;
+		try {
+			Configuration cfg = new Configuration();
+			cfg.configure("hibernate.cfg.xml");
+			SessionFactory sf = cfg.buildSessionFactory();
+			Session session = sf.openSession();
+			Transaction trans = session.beginTransaction();
+			vitals = session.createQuery("FROM Vitals WHERE patient.patientId = :patientId", Vitals.class)
+					.setParameter("patientId", patientId).list();
+			return vitals;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

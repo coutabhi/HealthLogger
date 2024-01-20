@@ -28,7 +28,6 @@ public class AddDoctorServlet extends HttpServlet {
 			throws ServletException, IOException {
 		HttpSession httpSession = request.getSession();
 		Admin loggedInAdmin = (Admin) httpSession.getAttribute("loggedInAdmin");
-		System.out.println("The loggedin admin is" + loggedInAdmin);
 		if (loggedInAdmin != null) {
 			String doctorName = request.getParameter("doctorName");
 			String doctorEmail = request.getParameter("doctorEmail");

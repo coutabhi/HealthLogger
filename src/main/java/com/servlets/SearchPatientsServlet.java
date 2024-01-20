@@ -32,19 +32,17 @@ public class SearchPatientsServlet extends HttpServlet {
 	 */
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		 try {
-	            // Get the search query from the request parameter
 	            String searchQuery = request.getParameter("searchQuery");
 
-	            // Get the doctorId from the request parameter
 	            Long doctorId = Long.parseLong(request.getParameter("doctorId"));
+	            if(doctorId != null) {
+	            	response.sendRedirect("doctorLogin.jsp?");
+	            }
 
-	            // Call the service method to search for patients
 	            List<Patient> searchResults = PatientService.searchPatientsByName(doctorId, searchQuery);
 
-	            // Convert the search results to JSON
 	            String jsonResults = new Gson().toJson(searchResults);
 
-	            // Send the JSON response
 	            response.setContentType("application/json");
 	            response.setCharacterEncoding("UTF-8");
 	            response.getWriter().write(jsonResults);

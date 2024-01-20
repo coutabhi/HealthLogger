@@ -31,8 +31,6 @@ public class DoctorAuthencticate extends HttpServlet {
 		String doctorEmail = request.getParameter("doctorEmail");
 		String doctorPassword = request.getParameter("doctorPassword");
 
-		System.out.println("Doctot email " + doctorEmail + "Doctor password" + doctorPassword);
-
 		Configuration cfg = new Configuration();
 		cfg.configure("hibernate.cfg.xml");
 		try (SessionFactory sf = cfg.buildSessionFactory(); Session session = sf.openSession()) {
@@ -47,9 +45,9 @@ public class DoctorAuthencticate extends HttpServlet {
 
 			if (doctor != null) {
 				HttpSession httpSession = request.getSession();
-				int sessionTimeoutInSeconds = 1* 60;
-                httpSession.setMaxInactiveInterval(sessionTimeoutInSeconds);
-				httpSession.setAttribute("loggedInDoctor", doctor);
+				httpSession.setMaxInactiveInterval(100000); 
+				httpSession.setAttribute("loggedDoctor", doctor);
+				
 				response.sendRedirect("doctorDashboard.jsp");
 			} else {
 				response.sendRedirect("doctorLogin.jsp?error=true");

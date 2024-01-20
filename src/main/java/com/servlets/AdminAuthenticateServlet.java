@@ -34,15 +34,15 @@ public class AdminAuthenticateServlet extends HttpServlet {
 			Admin admin = (Admin) session
 					.createQuery("FROM Admin WHERE adminEmail = :email AND adminPassword = :password")
 					.setParameter("email", adminEmail).setParameter("password", adminPassword).uniqueResult();
-
 			trans.commit();
-
 			if (admin != null) {
 				HttpSession httpSession = request.getSession();
+				httpSession.invalidate();
 				int sessionTimeoutInSeconds = 10 * 60;
-				httpSession.setMaxInactiveInterval(sessionTimeoutInSeconds);
-				httpSession.setAttribute("loggedInAdmin", admin);
-				System.out.println("The session attribute is " + httpSession.getAttribute("loggedInAdmin"));
+				HttpSession httpSession2 = request.getSession();
+				httpSession2.setMaxInactiveInterval(sessionTimeoutInSeconds);
+				httpSession2.setAttribute("loggedInAdmin", admin);
+				System.out.println("The session attribute is " + httpSession2.getAttribute("loggedInAdmin"));
 				response.sendRedirect("adminDashboard.jsp");
 			} else {
 				response.sendRedirect("adminLogin.jsp?error=true");
